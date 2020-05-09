@@ -1,0 +1,81 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {% endblock %}</title>
+
+    <!-- Scripts and stylecheets -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+    <script src="https://kit.fontawesome.com/fba5997caa.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
+
+
+    <link href="{% static "styles.css" %}" rel="stylesheet"/>
+
+    {% block script %} {% endblock %}
+
+    <!-- Script for tooltips -->
+    <script>
+      $(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+    </script>
+  </head>
+
+  <body>
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" style="margin-bottom: 0px;">
+          <div class="container-fluid">
+              <div class="navbar-header">
+                  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <a class="navbar-brand" href="{% url 'index' %}"><span><font color="#537fbe">TraceMe</font></span></a>
+              </div>
+              <div class="navbar-collapse collapse w-80 order-3 dual-collapse2">
+                <div class="text-capitalize navbar-header-2">
+                </div>
+              </div>
+              <div class="navbar-collapse collapse w-80 order-3 dual-collapse2">
+                  <ul class="nav navbar-nav navbar-right ml-auto">
+                      {% if request.user.is_superuser %}
+                        <li class="nav-item" data-toggle="tooltip" data-placement="top" title="Administration"><a href="{% url 'admin:index' %}"><i class="fas fa-users-cog" style="margin-top: 10px; margin-right: 10px;"></i></a></li>
+                      {% endif %}
+                      {% if user.is_authenticated %}
+                        <li class="nav-item">
+                          <form class="logout-link" action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link" data-toggle="tooltip" data-placement="top" title="Log Out"><i class="fas fa-sign-out-alt"></i></button>
+                          </form>
+                        </li>
+                      {% else %}
+                        <li class="nav-item" data-toggle="tooltip" data-placement="top" title="Login"><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt" style="margin-top: 10px; margin-left: 10px; margin-right: 10px;"></i></a></li>
+                        <li class="nav-item" data-toggle="tooltip" data-placement="top" title="Register"><a href="{% url 'register' %}"><i class="fas fa-user-plus" style="margin-top: 10px; margin-right: 10px;"></i></a></li>
+                      {% endif %}
+                  </ul>
+              </div>
+      </nav>
+
+    <!-- Flashed messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Main body -->
+    <div id="main-body">
+      {% block body %} {% endblock %}
+    </div>
+  </body>
+</html>

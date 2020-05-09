@@ -1,0 +1,31 @@
+{% extends "traceme/base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+  <!-- Index.html - homepage -->
+  <br>
+  <div class="app-info info-form">
+    <center>
+      <!-- Heading -->
+      <h2>Track Your Life Visually</h2><br>
+      <p>Track your life journey in a sigle map</p>
+
+      <!-- If user is logged in -->
+      {% if user.is_authenticated %}
+        <!-- Tell user how to add a place if there are no places added -->
+        {% if places == 0 %}
+          <b><p>Click on "Add a place" and follow the instrustions to add information about the places that you have been to.</p></b>
+        {% endif %}
+        <!-- No. of places in lifemap and links to add a place and view map -->
+        <p>You have {{ places }} places in your lifemap</p>
+        <br>
+        <a href="{% url 'addlocation' %}">Add a Place</a><br>
+        <a href="{% url 'map' %}">View Lifemap</a>
+      <!-- Provide link to login or register if user is not logged in -->
+      {% else %}
+        <p>You need to <a href="{% url 'login' %}">login</a> or <a href="{% url 'register' %}">register</a> to create a lifemap</p>
+      {% endif %}
+      </center>
+  </div>
+{% endblock %}

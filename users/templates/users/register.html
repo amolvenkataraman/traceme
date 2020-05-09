@@ -1,0 +1,26 @@
+{% extends "traceme/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+  <br>
+  <div class="login-register-form">
+      <form method="POST">
+        {% csrf_token %}
+        <fieldset class="form-group">
+          <legend>Register</legend>
+          <!-- Display the register form -->
+          {{ form|crispy }}
+        </fieldset>
+        <div class="form-group">
+          <button class="btn btn-outline-info" type="submit">Sign Up</button>
+        </div>
+      </form>
+      <hr>
+      <div class="">
+        <!-- Provide link to sign in page -->
+        <small class="text-muted">Already have an account? <a href="{% url 'login' %}">Sign In</a></small>
+      </div>
+  </div>
+{% endblock %}

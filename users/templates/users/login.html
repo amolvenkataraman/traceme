@@ -1,0 +1,29 @@
+{% extends "traceme/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% endblock %}
+
+{% block body %}
+  <br>
+  <div class="login-register-form">
+    <form method="POST">
+      {% csrf_token %}
+      <fieldset class="form-group">
+        <legend>Log In</legend>
+        <!-- Display the login form -->
+        {{ form|crispy }}
+        {% if request.GET.next %}
+          <input type="hidden" name="next" value="{{ request.GET.next }}">
+        {% endif %}
+      </fieldset>
+      <div class="form-group">
+        <button class="btn btn-outline-info" type="submit">Log In</button>
+      </div>
+    </form>
+    <hr>
+    <div class="">
+      <!-- Provide link to register page -->
+      <small class="text-muted">Don't have an account? <a href="{% url 'register' %}">Register</a></small>
+    </div>
+  </div>
+{% endblock %}
