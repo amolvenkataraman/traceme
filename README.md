@@ -30,3 +30,5 @@ Since there are a lot of files in a Django application, I can not go through eac
 - When running the app for the first time, run `pip install -r requirements.txt` or `pip3 install -r requirements.txt` to make sure that all of the necessary Python packages are installed.
 - Run the app: Run the command `python manage.py runserver`.
 - Open a browser window and go to `127.0.0.1:8000` *(unless the app was made to run on a different host or port)* to see the web app.
+
+Video demonstration: https://youtu.be/H4c4PkF7uD0
