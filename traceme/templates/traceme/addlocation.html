@@ -1,0 +1,278 @@
+{% extends "traceme/base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block script %}
+  <!-- Addlocation.html - add a location to lifemap -->
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+      var res;
+      var key = "ZzSZC97DD1AvxLllrDRey80SDFGXpi52"; // Key for API
+
+      // Show the first question and wait for the user to press the "Next" button
+      document.querySelector('.question-set-1').style = "display: block;";
+      document.querySelector('.next-qs-1').onclick = () => {
+        city = document.querySelector('.city');
+        country = document.querySelector('.country');
+
+        // Check if input is correct
+        if (city.value == "") {
+          document.querySelector('.city-warn').innerHTML = "Please enter a city";
+        }
+        else {
+          document.querySelector('.city-warn').innerHTML = "";
+        }
+
+        if (city.value != "") {
+          // Get information about the city
+          var request = new XMLHttpRequest;
+
+          if (country.value == "") {
+            request.open('GET', `https://www.mapquestapi.com/geocoding/v1/address?key=${key}&inFormat=kvp&outFormat=json&location=${city.value}&thumbMaps=false&maxResults=1`);
+          }
+          else {
+            request.open('GET', `https://www.mapquestapi.com/geocoding/v1/address?key=${key}&inFormat=kvp&outFormat=json&location=${city.value}, ${country.value}&thumbMaps=false&maxResults=1`);
+          }
+          request.onload = () => {
+            // Get response from API
+            res = JSON.parse(request.responseText)["results"][0]["locations"][0];
+            // Check if city is sent as response
+            if (res["adminArea1"] == "USA" && (res["adminArea3"] == "") || (res["adminArea5"] == "")) {
+              document.querySelector('.city-warn').innerHTML = "Invalid city or country";
+            }
+            // Ask user to confirm, go to the next question if confirmed, go back if not
+            else {
+              document.querySelector('.question-set-1').style="display: none;";
+              document.querySelector('.question-set-1-conf').style="display: block;";
+
+              document.querySelector('.city-info').innerHTML = res["adminArea5"] + ", " + res["adminArea3"] + ", " + res["adminArea1"];
+
+              document.querySelector('.yes-qc-1').onclick = () => {
+                document.querySelector('.question-set-1-conf').style = "display: none;";
+                document.querySelector('.question-set-2').style = "display: block;";
+              }
+              document.querySelector('.no-qc-1').onclick = () => {
+                document.querySelector('.question-set-1-conf').style = "display: none;";
+                document.querySelector('.question-set-1').style = "display: block;";
+                document.querySelector('.country').value = "";
+                document.querySelector('.city').value = "";
+              }
+            }
+          }
+          request.send()
+        }
+      }
+
+      // Wait for user to finish second question
+      document.querySelector('.next-qs-2').onclick = () => {
+        sd = document.querySelector('.startdate');
+        ed = document.querySelector('.enddate');
+        cl = document.querySelector('.currently-living');
+        var valid = true;
+
+        // Check for valid input
+        if (sd.value == "") {
+          document.querySelector('.sd-warn').innerHTML = "Please select a start date";
+          valid = false;
+        }
+        else {
+          document.querySelector('.sd-warn').innerHTML = "";
+        }
+        if (ed.value == "" && cl.checked == false) {
+          document.querySelector('.ed-warn').innerHTML = "Please select an end date";
+          valid = false;
+        }
+        else {
+          document.querySelector('.ed-warn').innerHTML = "";
+        }
+        today = new Date();
+        if (sd.value != "") {
+          sd1 = sd.value.split('-');
+          if ((parseInt(sd1[0]) + (parseInt(sd1[1]) / 12) + (parseInt(sd1[2]) / 365)) > (today.getFullYear() + ((today.getMonth() + 1) / 12) + (today.getDate() / 365))) {
+            document.querySelector('.sd-warn').innerHTML = "Invalid start date";
+            valid = false;
+          }
+        }
+        if (ed.value != "") {
+          ed1 = ed.value.split('-');
+          if ((parseInt(ed1[0]) + (parseInt(ed1[1]) / 12) + (parseInt(ed1[2]) / 365)) > (today.getFullYear() + ((today.getMonth() + 1) / 12) + (today.getDate() / 365))) {
+            document.querySelector('.ed-warn').innerHTML = "Invalid end date";
+            valid = false;
+          }
+        }
+        if (sd.value != "" && ed.value != "") {
+          sd1 = sd.value.split('-');
+          ed1 = ed.value.split('-');
+          if (sd1[0] + (sd1[1] / 12) + (sd1[2] / 365) > ed1[0] + (ed1[1] / 12) + (ed1[2] / 365)) {
+            document.querySelector('.sd-warn').innerHTML = "Start date must be before end date";
+            valid = false;
+          }
+        }
+
+        // Go to next question if input is valid
+        if (valid == true) {
+          document.querySelector('.question-set-2').style = "display: none;";
+          document.querySelector('.question-set-3').style = "display: block;";
+
+        }
+      }
+
+      // Open or close the add event selector if user clicks the "Add an event button"
+      var event_ = false;
+      document.querySelector('.add-event').onclick = () => {
+        if (event_ == true) {
+          event_ = false;
+          document.querySelector('.special-event').style = "display: none;";
+        }
+        else {
+          event_ = true;
+          document.querySelector('.special-event').style = "display: block;";
+        }
+      }
+
+      // Check for valid input on clicking the "Finish" button
+      document.querySelector('.next-qs-3').onclick = () => {
+        if (document.querySelector('.event-select').value == "") {
+          if (event_ == true) {
+            document.querySelector('.event-warn').innerHTML = "Please select an event or close the event selector by pressing the \"Add an event\" button";
+            valid3 = false;
+          }
+          else {
+            document.querySelector('.event-warn').innerHTML = "";
+            valid3 = true;
+          }
+        }
+        else {
+          valid3 = true;
+          document.querySelector('.event-warn').innerHTML = "";
+        }
+
+        var reason = document.querySelector('.reason');
+        var valid3 = true;
+
+        if (reason.value == "") {
+          document.querySelector('.reason-warn').innerHTML = "Please select a reason";
+          valid3 = false;
+        }
+        else {
+          document.querySelector('.reason-warn').innerHTML = "";
+          valid3 = true;
+        }
+
+        // If input is valid
+        if (valid3 == true) {
+          // Parse input as JSON and send to server
+          result = {
+            "user": "{{ user.username }}",
+            "city": res["adminArea5"],
+            "state": res["adminArea3"],
+            "country":  res["adminArea1"],
+            "latitude": res["latLng"]["lat"],
+            "longitude": res["latLng"]["lng"],
+            "start": document.querySelector('.startdate').value,
+            "end": "",
+            "reason": document.querySelector('.reason').value,
+            "event": document.querySelector('.event-select').value,
+          }
+          if (document.querySelector('.startdate').checked == false) {
+            result["end"] = document.querySelector('.enddate').value;
+          }
+
+          var request = new XMLHttpRequest();
+          request.open('POST', `/add/`);
+          request.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+          request.onload = () => {
+            // Redirect to home page
+            window.location.href = "/";
+          }
+          request.send(JSON.stringify(result));
+        }
+      }
+    });
+  </script>
+{% endblock %}
+
+{% block body %}
+  <br>
+  <div id="questions">
+    <!-- Question set 1 - Which city? -->
+    <div class="question-set-1 question-form" style="display: none;">
+      <center><h4>Let's get some basic info:</h4></center>
+      <br>
+      <label for="city">Which city were you in?</label>
+      <input class="form-control city" id="city" type="text" placeholder="City / Town">
+      <p class="text-danger city-warn"></p>
+      <br>
+      <label for="country">Country / state (optional)?</label>
+      <input class="form-control country" id="country" type="text" placeholder="Country / Province / State">
+      <p class="text-danger country-warn"></p>
+      <br>
+      <button type="submit" class="btn btn-primary next-qs-1" style="width: 100%;">Next</button>
+    </div>
+
+    <!-- Confirmation for question set 1 -->
+    <div class="question-set-1-conf question-form" style="display: none;">
+      <center><h4>Is this right?</h4></center>
+      <br>
+      <p class="city-info"></p>
+      <br>
+      <center>
+        <button type="button" class="btn btn-success yes-qc-1" style="width: 40%;">Yes, continue</button>
+        <button type="button" class="btn btn-danger no-qc-1" style="width: 40%;">No, take me back</button>
+      </center>
+    </div>
+
+    <!-- Question set 2 - Start and end date -->
+    <div class="question-set-2 question-form" style="display: none;">
+      <center><h4>From when to when were you here?</h4></center>
+      <br>
+      <label for="startdate">Start date:</label>
+      <br>
+      <input type="date" class="startdate" name="startdate" style="width: 100%; height: 34px;">
+      <p class="text-danger sd-warn"></p>
+      <br>
+      <label for="startdate">End date:</label>
+      <br>
+      <input type="date" class="enddate" name="enddate" style="width: 100%; height: 34px;">
+      <p class="text-danger ed-warn"></p>
+      <div class="custom-control custom-checkbox">
+      <input type="checkbox" class="custom-control-input currently-living" id="customCheck1">
+      <label class="custom-control-label" for="customCheck1">I currently live here</label>
+      </div>
+      <br>
+      <button type="submit" class="btn btn-primary next-qs-2" style="width: 100%;">Next</button>
+    </div>
+
+    <!-- Question set 3 - Reason and event -->
+    <div class="question-set-3 question-form" style="display: none;">
+      <center><h4>Why were you here?</h4></center>
+      <br>
+      <label for="reason">Why did you go here?</label>
+      <select class="custom-select reason">
+        <option selected value="">Select an option</option>
+        <option value="live">Live(d) here</option>
+        <option value="study">Study</option>
+        <option value="work">Work</option>
+        <option value="travel">Vacation / Travel</option>
+        <option value="other">Other</option>
+      </select>
+      <p class="text-danger reason-warn"></p>
+      <br>
+      <button type="submit" class="btn btn-secondary add-event" style="width: 100%;">Add an event</button>
+      <br>
+      <div class="special-event" style="display: none;">
+        <br>
+        <label for="event-select">What happened here?</label>
+        <select class="custom-select event-select" name="event-select">
+          <option selected value="">Select an event</option>
+          {% for event in events %}
+            <option value="{{ event }}">{{ event }}</option>
+          {% endfor %}
+        </select>
+        <p class="text-danger event-warn"></p>
+      </div>
+      <br>
+      <button type="submit" class="btn btn-primary next-qs-3" style="width: 100%;">Finish</button>
+    </div>
+  </div>
+{% endblock %}

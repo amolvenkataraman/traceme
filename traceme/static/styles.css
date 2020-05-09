@@ -1,0 +1,60 @@
+.menu {
+  width: 94%;
+  margin-left: 3%;
+  margin-right: 3%;
+}
+
+.item-card {
+  min-width: 200px;
+  max-width: 200px;
+  margin: 15px;
+  float: left;
+}
+
+.card-body {
+  background: #f8f9fa;
+}
+
+.login-register-form {
+	width: 30%;
+	border-radius: 10px;
+	background: #f8f8f8;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 15px;
+}
+
+.question-form {
+	width: 30%;
+	border-radius: 10px;
+	background: #f8f8f8;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 15px;
+}
+
+.info-form {
+	width: 40%;
+	border-radius: 10px;
+	background: #f8f8f8;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 15px;
+}
+
+.warning-text {
+  color: red;
+}
+
+.info {
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+}
+.info h4 {
+    margin: 0 0 5px;
+    color: #777;
+}
